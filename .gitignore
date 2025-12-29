@@ -1,0 +1,34 @@
+# Binaries
+traefik-fed
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+*.out
+
+# Build output
+/bin/
+/dist/
+
+# Configuration files (keep examples)
+config.yaml
+*.local.yaml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log

@@ -1,0 +1,38 @@
+# Example configuration for traefik-fed
+
+upstreams:
+  # First upstream Traefik instance
+  - name: host1
+    admin_url: http://192.168.1.10:8080    # Traefik admin URL
+    server_url: http://192.168.1.10:80     # URL to route traffic to
+
+  # Second upstream Traefik instance
+  - name: host2
+    admin_url: http://192.168.1.11:8080
+    server_url: http://192.168.1.11:80
+
+routers:
+  selector:
+    # Filter routers by provider (optional)
+    # Examples: docker, file, kubernetes
+    # Note: internal provider is always excluded
+    provider: docker
+    # Filter by status (default: enabled)
+    # Options: enabled, disabled
+    status: enabled
+
+output:
+  # HTTP endpoint for Traefik HTTP provider
+  http:
+    enabled: true
+    port: 8080
+    path: /config
+
+  # File output for Traefik File provider
+  file:
+    enabled: true
+    path: /etc/traefik/dynamic/federation.yml
+    interval: 30s  # Update interval
+
+server:
+  poll_interval: 10s  # How often to poll upstream Traefiks
