@@ -1,5 +1,5 @@
 # Binaries
-traefik-fed
+/traefik-fed
 *.exe
 *.exe~
 *.dll
