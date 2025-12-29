@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"sync"
 
-	traefikDynamic "github.com/traefik/traefik/v3/pkg/config/dynamic"
+	"github.com/traefik/traefik/v3/pkg/config/dynamic"
 	"gopkg.in/yaml.v3"
 )
 
@@ -18,7 +18,7 @@ type HTTPServer struct {
 	logger *slog.Logger
 
 	mu     sync.RWMutex
-	config *traefikDynamic.HTTPConfiguration
+	config *dynamic.HTTPConfiguration
 }
 
 // NewHTTPServer creates a new HTTP server
@@ -27,12 +27,12 @@ func NewHTTPServer(port int, path string, logger *slog.Logger) *HTTPServer {
 		port:   port,
 		path:   path,
 		logger: logger,
-		config: &traefikDynamic.HTTPConfiguration{},
+		config: &dynamic.HTTPConfiguration{},
 	}
 }
 
 // UpdateConfig updates the cached configuration
-func (s *HTTPServer) UpdateConfig(config *traefikDynamic.HTTPConfiguration) {
+func (s *HTTPServer) UpdateConfig(config *dynamic.HTTPConfiguration) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.config = config
@@ -67,7 +67,7 @@ func (s *HTTPServer) handleConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 // serveJSON serves configuration as JSON
-func (s *HTTPServer) serveJSON(w http.ResponseWriter, config *traefikDynamic.HTTPConfiguration) {
+func (s *HTTPServer) serveJSON(w http.ResponseWriter, config *dynamic.HTTPConfiguration) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Wrap in http key for Traefik format
@@ -82,7 +82,7 @@ func (s *HTTPServer) serveJSON(w http.ResponseWriter, config *traefikDynamic.HTT
 }
 
 // serveYAML serves configuration as YAML
-func (s *HTTPServer) serveYAML(w http.ResponseWriter, config *traefikDynamic.HTTPConfiguration) {
+func (s *HTTPServer) serveYAML(w http.ResponseWriter, config *dynamic.HTTPConfiguration) {
 	w.Header().Set("Content-Type", "application/x-yaml")
 
 	// Wrap in http key for Traefik format

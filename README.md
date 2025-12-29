@@ -61,6 +61,14 @@ routers:
     provider: docker       # Filter by provider (optional)
     status: enabled        # Filter by status (default: enabled)
 
+  defaults:
+    entrypoints:
+      - websecure
+    middlewares:
+      - compress@file
+    tls:
+      certResolver: letsencrypt
+
 output:
   http:
     enabled: true
@@ -87,6 +95,14 @@ server:
 - `provider`: Filter routers by provider (`docker`, `file`, `kubernetes`, etc.) - optional
 - `status`: Filter by status (`enabled` or `disabled`) - defaults to `enabled`
 - Note: Routers from the `internal` provider (API, dashboard) are always excluded
+
+**Router Defaults**:
+- `entrypoints`: Entrypoints for all generated routers
+- `middlewares`: Middlewares for all generated routers 
+- `tls`: TLS configuration
+  - `certResolver`: Certificate resolver name (e.g., `letsencrypt`)
+  - `options`: TLS options name (optional)
+  - `domains`: TLS domains configuration (optional)
 
 **Output**:
 - `http.enabled`: Enable HTTP endpoint

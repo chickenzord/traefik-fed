@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	traefikDynamic "github.com/traefik/traefik/v3/pkg/config/dynamic"
+	"github.com/traefik/traefik/v3/pkg/config/dynamic"
 	"gopkg.in/yaml.v3"
 )
 
@@ -28,11 +28,11 @@ func NewFileWriter(path string, interval time.Duration, logger *slog.Logger) *Fi
 }
 
 // Start starts the periodic file writing
-func (w *FileWriter) Start(configChan <-chan *traefikDynamic.HTTPConfiguration) error {
+func (w *FileWriter) Start(configChan <-chan *dynamic.HTTPConfiguration) error {
 	ticker := time.NewTicker(w.interval)
 	defer ticker.Stop()
 
-	var currentConfig *traefikDynamic.HTTPConfiguration
+	var currentConfig *dynamic.HTTPConfiguration
 
 	// Write initial config if available
 	select {
@@ -63,7 +63,7 @@ func (w *FileWriter) Start(configChan <-chan *traefikDynamic.HTTPConfiguration) 
 }
 
 // writeConfig writes the configuration to the file
-func (w *FileWriter) writeConfig(config *traefikDynamic.HTTPConfiguration) error {
+func (w *FileWriter) writeConfig(config *dynamic.HTTPConfiguration) error {
 	// Ensure directory exists
 	dir := filepath.Dir(w.path)
 	if err := os.MkdirAll(dir, 0755); err != nil {

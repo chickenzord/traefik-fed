@@ -7,7 +7,7 @@ import (
 
 	"github.com/chickenzord/traefik-fed/internal/config"
 	"github.com/chickenzord/traefik-fed/internal/traefik"
-	traefikDynamic "github.com/traefik/traefik/v3/pkg/config/dynamic"
+	"github.com/traefik/traefik/v3/pkg/config/dynamic"
 )
 
 // Aggregator aggregates configurations from multiple Traefik upstreams
@@ -34,10 +34,10 @@ func New(cfg *config.Config, logger *slog.Logger) *Aggregator {
 }
 
 // Aggregate fetches and aggregates configurations from all upstreams
-func (a *Aggregator) Aggregate() (*traefikDynamic.HTTPConfiguration, error) {
-	httpConfig := &traefikDynamic.HTTPConfiguration{
-		Routers:  make(map[string]*traefikDynamic.Router),
-		Services: make(map[string]*traefikDynamic.Service),
+func (a *Aggregator) Aggregate() (*dynamic.HTTPConfiguration, error) {
+	httpConfig := &dynamic.HTTPConfiguration{
+		Routers:  make(map[string]*dynamic.Router),
+		Services: make(map[string]*dynamic.Service),
 	}
 
 	for _, upstream := range a.config.Upstreams {
@@ -54,7 +54,7 @@ func (a *Aggregator) Aggregate() (*traefikDynamic.HTTPConfiguration, error) {
 }
 
 // aggregateUpstream aggregates configuration from a single upstream
-func (a *Aggregator) aggregateUpstream(upstream config.Upstream, httpConfig *traefikDynamic.HTTPConfiguration) error {
+func (a *Aggregator) aggregateUpstream(upstream config.Upstream, httpConfig *dynamic.HTTPConfiguration) error {
 	client := a.clients[upstream.Name]
 
 	// Fetch routers from upstream
@@ -74,9 +74,9 @@ func (a *Aggregator) aggregateUpstream(upstream config.Upstream, httpConfig *tra
 	// Create a service for this upstream if we have any routers
 	if len(filteredRouters) > 0 {
 		serviceName := fmt.Sprintf("%s-traefik", upstream.Name)
-		httpConfig.Services[serviceName] = &traefikDynamic.Service{
-			LoadBalancer: &traefikDynamic.ServersLoadBalancer{
-				Servers: []traefikDynamic.Server{
+		httpConfig.Services[serviceName] = &dynamic.Service{
+			LoadBalancer: &dynamic.ServersLoadBalancer{
+				Servers: []dynamic.Server{
 					{
 						URL: upstream.ServerURL,
 					},
@@ -96,15 +96,24 @@ func (a *Aggregator) aggregateUpstream(upstream config.Upstream, httpConfig *tra
 			routerName := fmt.Sprintf("%s-%s", upstream.Name, baseName)
 
 			// Create a new router pointing to our upstream service
-			newRouter := &traefikDynamic.Router{
-				Rule:        router.Rule,
-				Service:     serviceName,
-				EntryPoints: router.EntryPoints,
-				Middlewares: router.Middlewares,
+			newRouter := &dynamic.Router{
+				Rule:    router.Rule,
+				Service: serviceName,
 			}
 
-			// Copy TLS configuration if present
-			if router.TLS != nil {
+			// Apply defaults (not copied from upstream)
+			if len(a.config.Routers.Defaults.EntryPoints) > 0 {
+				newRouter.EntryPoints = a.config.Routers.Defaults.EntryPoints
+			}
+
+			if len(a.config.Routers.Defaults.Middlewares) > 0 {
+				newRouter.Middlewares = a.config.Routers.Defaults.Middlewares
+			}
+
+			// Apply TLS: use defaults if present, otherwise use router's TLS
+			if a.config.Routers.Defaults.TLS != nil {
+				newRouter.TLS = a.config.Routers.Defaults.TLS
+			} else if router.TLS != nil {
 				newRouter.TLS = router.TLS
 			}
 

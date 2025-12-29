@@ -21,6 +21,23 @@ routers:
     # Options: enabled, disabled
     status: enabled
 
+  # Default values applied to all generated routers
+  # Note: Upstream router entrypoints and middlewares are NOT copied
+  defaults:
+    # Entrypoints for all generated routers
+    entrypoints:
+      - websecure
+
+    # Middlewares for all generated routers
+    middlewares:
+      - compress@file
+      - rate-limit@file
+
+    # TLS configuration (falls back to upstream router TLS if not specified)
+    tls:
+      certResolver: letsencrypt
+      # options: modern@file  # Optional TLS options
+
 output:
   # HTTP endpoint for Traefik HTTP provider
   http:

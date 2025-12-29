@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/traefik/traefik/v3/pkg/config/dynamic"
 	"gopkg.in/yaml.v3"
 )
 
@@ -23,15 +24,23 @@ type Upstream struct {
 	ServerURL string `yaml:"server_url"` // Full URL to route traffic to (e.g., http://100.64.1.2:80)
 }
 
-// RouterConfig defines how to filter routers
+// RouterConfig defines how to filter and configure routers
 type RouterConfig struct {
 	Selector RouterSelector `yaml:"selector"`
+	Defaults RouterDefaults `yaml:"defaults"`
 }
 
 // RouterSelector defines filtering criteria for routers
 type RouterSelector struct {
 	Provider string `yaml:"provider"`
 	Status   string `yaml:"status"`
+}
+
+// RouterDefaults defines default values applied to all generated routers
+type RouterDefaults struct {
+	EntryPoints []string                 `yaml:"entrypoints"`
+	Middlewares []string                 `yaml:"middlewares"`
+	TLS         *dynamic.RouterTLSConfig `yaml:"tls"`
 }
 
 // OutputConfig defines where to output the aggregated configuration
