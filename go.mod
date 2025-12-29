@@ -3,6 +3,7 @@ module github.com/chickenzord/traefik-fed
 go 1.25.2
 
 require (
+	github.com/stretchr/testify v1.11.1
 	github.com/traefik/traefik/v3 v3.6.5
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -42,6 +43,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/traefik/paerser v0.2.2 // indirect
 	github.com/unrolled/render v1.0.2 // indirect
