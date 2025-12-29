@@ -1,0 +1,109 @@
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: traefik-fed
+    main: ./cmd/traefik-fed
+    binary: traefik-fed
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    goarm:
+      - "7"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/chickenzord/traefik-fed/internal/version.Version={{.Version}}
+      - -X github.com/chickenzord/traefik-fed/internal/version.GitCommit={{.FullCommit}}
+      - -X github.com/chickenzord/traefik-fed/internal/version.BuildDate={{.Date}}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+archives:
+  - id: default
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: linux
+        format: tar.gz
+      - goos: darwin
+        format: tar.gz
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^nit:'
+      - '^chore(.*):'
+      - '^build(.*):'
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: 'Enhancements'
+      regexp: "^.*enhancement[(\\w)]*:+.*$"
+      order: 2
+    - title: Others
+      order: 999
+
+# Release configuration
+release:
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## traefik-fed {{ .Tag }}
+
+    A lightweight Go service that federates routing configurations from multiple Traefik instances into a single unified configuration.
+
+    ### Installation
+
+    **Binary Download:**
+    Download the appropriate binary for your platform from the assets below.
+
+    **Go Install:**
+    ```bash
+    go install github.com/chickenzord/traefik-fed/cmd/traefik-fed@{{ .Tag }}
+    ```
+
+    **Docker:**
+    ```bash
+    docker pull ghcr.io/chickenzord/traefik-fed:{{ .Tag }}
+    ```
+  footer: |
+    **Full Changelog**: https://github.com/chickenzord/traefik-fed/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+# Universal binaries for macOS
+universal_binaries:
+  - replace: false
+
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj

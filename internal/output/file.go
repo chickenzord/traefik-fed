@@ -72,11 +72,15 @@ func (w *FileWriter) writeConfig(config *dynamic.HTTPConfiguration) error {
 
 	// Write to temporary file first
 	tmpPath := w.path + ".tmp"
+
 	f, err := os.Create(tmpPath)
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
-	defer f.Close()
+
+	defer func() {
+		_ = f.Close()
+	}()
 
 	// Wrap in http key for Traefik format
 	output := map[string]interface{}{
@@ -85,6 +89,7 @@ func (w *FileWriter) writeConfig(config *dynamic.HTTPConfiguration) error {
 
 	encoder := yaml.NewEncoder(f)
 	encoder.SetIndent(2)
+
 	if err := encoder.Encode(output); err != nil {
 		return fmt.Errorf("failed to encode YAML: %w", err)
 	}
@@ -103,5 +108,6 @@ func (w *FileWriter) writeConfig(config *dynamic.HTTPConfiguration) error {
 	}
 
 	w.logger.Info("wrote configuration to file", "path", w.path)
+
 	return nil
 }

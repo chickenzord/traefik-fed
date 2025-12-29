@@ -125,9 +125,11 @@ func (c *Config) Validate() error {
 		if upstream.Name == "" {
 			return fmt.Errorf("upstream %d: name is required", i)
 		}
+
 		if upstream.AdminURL == "" {
 			return fmt.Errorf("upstream %s: admin_url is required", upstream.Name)
 		}
+
 		if upstream.ServerURL == "" {
 			return fmt.Errorf("upstream %s: server_url is required", upstream.Name)
 		}

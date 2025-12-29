@@ -36,17 +36,17 @@ type Observability struct {
 
 // RouterInfo represents a router from the Traefik API
 type RouterInfo struct {
-	EntryPoints   []string       `json:"entryPoints"`
-	Middlewares   []string       `json:"middlewares,omitempty"`
-	Service       string         `json:"service"`
-	Rule          string         `json:"rule"`
-	RuleSyntax    string         `json:"ruleSyntax"`
-	Priority      int            `json:"priority"`
-	Observability *Observability `json:"observability,omitempty"`
-	Status        string         `json:"status"`
-	Using         []string       `json:"using"`
-	Name          string         `json:"name"`
-	Provider      string         `json:"provider"`
+	EntryPoints   []string                 `json:"entryPoints"`
+	Middlewares   []string                 `json:"middlewares,omitempty"`
+	Service       string                   `json:"service"`
+	Rule          string                   `json:"rule"`
+	RuleSyntax    string                   `json:"ruleSyntax"`
+	Priority      int                      `json:"priority"`
+	Observability *Observability           `json:"observability,omitempty"`
+	Status        string                   `json:"status"`
+	Using         []string                 `json:"using"`
+	Name          string                   `json:"name"`
+	Provider      string                   `json:"provider"`
 	TLS           *dynamic.RouterTLSConfig `json:"tls,omitempty"`
 }
 
@@ -58,7 +58,10 @@ func (c *Client) GetRouters() ([]*RouterInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch routers: %w", err)
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
@@ -82,6 +85,7 @@ func (c *Client) GetRouters() ([]*RouterInfo, error) {
 // FilterRouters filters routers based on provider and status
 func FilterRouters(routers []*RouterInfo, provider, status string) []*RouterInfo {
 	filtered := make([]*RouterInfo, 0)
+
 	for _, router := range routers {
 		// Always exclude internal provider
 		if router.Provider == "internal" {
