@@ -35,6 +35,7 @@ func NewHTTPServer(port int, path string, logger *slog.Logger) *HTTPServer {
 func (s *HTTPServer) UpdateConfig(config *dynamic.HTTPConfiguration) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.config = config
 }
 
@@ -99,5 +100,5 @@ func (s *HTTPServer) serveYAML(w http.ResponseWriter, config *dynamic.HTTPConfig
 // handleHealth provides a health check endpoint
 func (s *HTTPServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	_, _ = w.Write([]byte("OK"))
 }

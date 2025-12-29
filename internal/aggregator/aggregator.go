@@ -20,6 +20,7 @@ type Aggregator struct {
 // New creates a new aggregator
 func New(cfg *config.Config, logger *slog.Logger) *Aggregator {
 	clients := make(map[string]*traefik.Client)
+
 	for _, upstream := range cfg.Upstreams {
 		// Append /api to admin URL to get the API endpoint
 		apiURL := strings.TrimSuffix(upstream.AdminURL, "/") + "/api"
