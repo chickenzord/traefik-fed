@@ -71,6 +71,18 @@ func (a *Aggregator) aggregateUpstream(upstream config.Upstream, httpConfig *dyn
 		"total", len(routers),
 		"filtered", len(filteredRouters))
 
+	// Debug: log filtered routers
+	for _, router := range filteredRouters {
+		a.logger.Debug("router will be aggregated",
+			"upstream", upstream.Name,
+			"name", router.Name,
+			"provider", router.Provider,
+			"status", router.Status,
+			"rule", router.Rule,
+			"entrypoints", router.EntryPoints,
+			"service", router.Service)
+	}
+
 	// Create a service for this upstream if we have any routers
 	if len(filteredRouters) > 0 {
 		serviceName := fmt.Sprintf("%s-traefik", upstream.Name)

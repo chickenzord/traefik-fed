@@ -82,6 +82,10 @@ output:
 
 server:
   poll_interval: 10s
+
+log:
+  format: plain
+  level: info
 ```
 
 ### Configuration Reference
@@ -114,6 +118,10 @@ server:
 
 **Server**:
 - `poll_interval`: How often to poll upstream Traefik APIs
+
+**Log**:
+- `format`: Log output format (`plain` or `json`) - defaults to `plain`
+- `level`: Log level (`debug`, `info`, `warn`, `error`) - defaults to `info`
 
 ## Usage
 

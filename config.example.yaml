@@ -53,3 +53,7 @@ output:
 
 server:
   poll_interval: 10s  # How often to poll upstream Traefiks
+
+log:
+  format: plain       # Log format: plain, json (default: plain)
+  level: info         # Log level: debug, info, warn, error (default: info)

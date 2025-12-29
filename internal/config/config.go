@@ -15,6 +15,7 @@ type Config struct {
 	Routers   RouterConfig `yaml:"routers"`
 	Output    OutputConfig `yaml:"output"`
 	Server    ServerConfig `yaml:"server"`
+	Log       LogConfig    `yaml:"log"`
 }
 
 // Upstream represents a Traefik instance to poll
@@ -68,6 +69,12 @@ type ServerConfig struct {
 	PollInterval time.Duration `yaml:"poll_interval"`
 }
 
+// LogConfig defines logging behavior
+type LogConfig struct {
+	Format string `yaml:"format"` // Format: plain, json (default: plain)
+	Level  string `yaml:"level"`  // Level: debug, info, warn, error (default: info)
+}
+
 // Load reads and parses the configuration file
 func Load(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
@@ -95,6 +102,14 @@ func Load(path string) (*Config, error) {
 
 	if cfg.Routers.Selector.Status == "" {
 		cfg.Routers.Selector.Status = "enabled"
+	}
+
+	if cfg.Log.Format == "" {
+		cfg.Log.Format = "plain"
+	}
+
+	if cfg.Log.Level == "" {
+		cfg.Log.Level = "info"
 	}
 
 	return &cfg, nil
