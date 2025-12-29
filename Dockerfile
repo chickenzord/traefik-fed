@@ -17,9 +17,11 @@ COPY . .
 ARG VERSION=dev
 ARG GIT_COMMIT=unknown
 ARG BUILD_DATE=unknown
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
 
 # Build the application
-RUN CGO_ENABLED=0 go build \
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-w -s -extldflags '-static' -X 'github.com/chickenzord/traefik-fed/internal/version.Version=${VERSION}' -X 'github.com/chickenzord/traefik-fed/internal/version.GitCommit=${GIT_COMMIT}' -X 'github.com/chickenzord/traefik-fed/internal/version.BuildDate=${BUILD_DATE}'" \
     -a -installsuffix cgo \
     -o traefik-fed ./cmd/traefik-fed
