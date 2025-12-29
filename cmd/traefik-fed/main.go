@@ -17,6 +17,7 @@ import (
 
 func main() {
 	configPath := flag.String("config", "config.yaml", "Path to configuration file")
+
 	flag.Parse()
 
 	// Load configuration first (we need it for logger setup)
@@ -143,6 +144,7 @@ func runAggregation(
 func setupLogger(cfg config.LogConfig) *slog.Logger {
 	// Parse log level
 	var level slog.Level
+
 	switch cfg.Level {
 	case "debug":
 		level = slog.LevelDebug
